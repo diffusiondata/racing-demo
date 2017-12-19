@@ -1,0 +1,27 @@
+{
+  "name": "realtime-race-stats-webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^14.5.0",
+    "gulp": "^3.9.1",
+    "gulp-connect": "5.0.0",
+    "gulp-streamify": "1.0.2",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "@uirouter/angularjs": "^1.0.3",
+    "angular": "^1.6.6",
+    "angular-nvd3": "^1.0.9",
+    "angularjs-gauge": "^2.2.0",
+    "angularjs-slider": "^6.4.1",
+    "diffusion": "^6.0.2",
+    "svg-path-properties": "^0.4.1"
+  }
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   width="1024"
+   height="1024"
+   id="svg2">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3050">
+      <stop
+         id="stop3052"
+         style="stop-color:#000000;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop3054"
+         style="stop-color:#000000;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       x1="745.71429"
+       y1="740.93359"
+       x2="457.14285"
+       y2="563.79077"
+       id="linearGradient3056"
+       xlink:href="#linearGradient3050"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-28.3622)"
+     id="layer1">
+    <path
+       d="M 180.40679,374.46396 332.73712,164.81238 c 91.80173,-96.138525 197.72678,-69.497746 235.0528,39.38213 l 63.55499,222.39276 c 53.46695,181.8524 50.44053,108.8798 160.40088,61.38965 l 59.51977,-24.32423 c 159.39204,-75.28923 184.61234,-30.11562 25.22029,142.47036 l -52.45816,59.07311 c -69.60793,68.33944 -85.74885,63.70628 -62.54625,100.77169 23.20267,37.06549 -29.25546,79.92243 -73.64313,104.24664 L 655.5564,891.06381 C 562.74587,950.13687 487.08506,885.27233 445.72388,808.8248 l -34.29957,-55.59813 c -77.67837,-133.20404 -68.59909,-62.54805 -99.8722,24.3242 -31.27312,86.87213 -119.03959,79.92236 -185.62108,-6.94981 L 67.420047,694.15356 C 6.8914401,606.12305 18.997158,576.00742 62.375989,521.56749 z"
+       id="path3197"
+       style="fill:none;stroke:#000000;stroke-width:1.51336074px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+  </g>
+</svg>

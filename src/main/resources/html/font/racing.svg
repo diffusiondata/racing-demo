@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2017 by original authors @ fontello.com</metadata>
+<defs>
+<font id="racing" horiz-adv-x="1000" >
+<font-face font-family="racing" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="gauge" unicode="&#xe800;" d="M406 178q34 56 214 284t194 220q12-6-96-278t-138-326q-50-86-136-36t-38 136z m94 380q-168 0-284-127t-116-311q0-30 2-46 2-22-12-37t-34-17-36 12-18 34q0 8-1 26t-1 28q0 226 145 382t355 156q72 0 134-18l-70-86q-40 4-64 4z m362-62q138-154 138-376 0-38-2-56-2-20-16-33t-34-13l-4 0q-22 4-35 20t-11 36q2 14 2 46 0 150-80 268 6 14 20 51t22 57z" horiz-adv-x="1000" />
+
+<glyph glyph-name="chart-line" unicode="&#xe801;" d="M34 284q-42 10-32 56 10 42 54 32l98-24-52-80z m890-12q14 12 33 11t31-15q32-32-2-64l-252-226q-12-12-30-12-14 0-28 10l-286 220-54 14 50 80 36-8q12-4 16-8l264-204z m-490 220l-350-550q-12-22-38-22-12 0-24 8-16 10-20 29t6 33l374 588q8 16 28 20 18 6 36-6l246-156 226 326q10 16 28 19t34-9q38-24 12-62l-252-362q-24-36-62-12z" horiz-adv-x="1003" />
+
+<glyph glyph-name="play" unicode="&#xe802;" d="M486 376q14-10 14-26 0-14-14-24l-428-266q-24-16-41-6t-17 40l0 514q0 30 17 40t41-6z" horiz-adv-x="500" />
+
+<glyph glyph-name="pause" unicode="&#xe803;" d="M440 700q90 0 90-64l0-570q0-66-90-66t-90 66l0 570q0 64 90 64z m-350 0q90 0 90-64l0-570q0-66-90-66t-90 66l0 570q0 64 90 64z" horiz-adv-x="530" />
+
+<glyph glyph-name="to-end" unicode="&#xe804;" d="M412 374q14-10 14-24 0-12-14-22l-362-228q-22-14-36-5t-14 35l0 442q0 26 14 35t36-5z m114 268q74 0 74-58l0-466q0-58-74-58-76 0-76 58l0 466q0 58 76 58z" horiz-adv-x="600" />
+</font>
+</defs>
+</svg>
