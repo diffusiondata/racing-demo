@@ -22,4 +22,4 @@ Execute the jar in the target directory
 More details
 ---
 
-Read the blog [here](www.pushtechnology.com/blog/play-back-historical-data-with-time-series-topics)
+Read the blog [here](https://www.pushtechnology.com/blog/play-back-historical-data-with-time-series-topics)
