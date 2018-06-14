@@ -64,6 +64,21 @@ public class Car implements Comparable<Car> {
         this.lapTimes = new ArrayList<>();
     }
 
+    void reset() {
+        this.maxSpeed = speedRange.getRandom() / 3.6;
+        this.cornering = corneringRange.getRandom() / 3.6;
+        this.position = 0;
+        this.location = 0.0;
+        this.lap = 1;
+        this.currentSpeed = 0.0;
+        this.previousLapTime = 0.0;
+        this.currentLapTime = 0.0;
+        this.lapDifference = 0.0;
+        this.accelerationTime = -1;
+        this.decelerationTime = -2;
+        this.elapsedReactionTime = 0.0;
+    }
+
     String getDriverName() {
         return driverName;
     }
@@ -73,6 +88,8 @@ public class Car implements Comparable<Car> {
     }
 
     double getLocation() { return location; }
+
+    int getLap() { return lap; }
 
     void setPosition(int position) {
         this.position = position;

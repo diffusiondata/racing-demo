@@ -44,6 +44,7 @@ class RaceBuilder {
     private long updateFrequency = 0;
     private int teamCount = 0;
     private int carCount = 0;
+    private int lapCount = 0;
     private String trackFilename = null;
     private Session session = null;
     private String topic = null;
@@ -74,6 +75,7 @@ class RaceBuilder {
             trackFilename = readString(properties, "track"); // Read race track file
             teamCount = readUnsignedInteger(properties, "teams"); // Read number of teams
             carCount = readUnsignedInteger(properties, "cars"); // Read number of cars per team
+            lapCount = readUnsignedInteger(properties, "laps"); // Read number of laps per race
             updateFrequency = readUnsignedLong(properties, "updatefreq"); // Read update frequency in milliseconds
             topic = readString(properties, "topic"); // Read topic
             retainedRange = readString(properties, "retainedrange"); // Read retained range for time series topics
@@ -180,6 +182,7 @@ class RaceBuilder {
                     track,
                     topic,
                     retainedRange,
+                    lapCount,
                     teams);
 
         } catch (InterruptedException

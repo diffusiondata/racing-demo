@@ -51,6 +51,7 @@ public class Race {
     private final String topic;
     private final TimeSeries timeSeries;
     private final DoubleRange reactionRange;
+    private final int lapCount;
 
     private boolean isStartOfRace = true;
 
@@ -61,6 +62,7 @@ public class Race {
             RaceTrack racetrack,
             String topic,
             String retainedRange,
+            int lapCount,
             ArrayList<Team> teams) throws InterruptedException, ExecutionException, TimeoutException {
 
         this.reactionRange = reactionRange;
@@ -69,6 +71,7 @@ public class Race {
         this.session = session;
         this.teams = teams;
         this.topic = topic;
+        this.lapCount = lapCount;
 
         cars = new ArrayList<>();
         sorted = new ArrayList<>();
@@ -169,9 +172,21 @@ public class Race {
                     position -= 1;
                 }
 
+                if (sorted.get(0).getLap() > lapCount) {
+                    reset();
+                }
+
                 // Send snapshot to Diffusion
                 timeSeries.append(topic + "/updates", JSON.class, createJSON());
             }
+        }
+    }
+
+    private void reset() {
+        isStartOfRace = true;
+
+        for (Car car : cars) {
+            car.reset();
         }
     }
 

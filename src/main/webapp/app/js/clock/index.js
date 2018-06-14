@@ -165,7 +165,9 @@ app.controller('ClockController', ['$scope', '$interval', 'ClockModel', 'Diffusi
     $scope.$watch(function() {
         return $scope.slider.value;
     }, function() {
-        ClockModel.setViewTime($scope.slider.value);
+        if (!ClockModel.getViewTime() || Math.abs(ClockModel.getViewTime() - $scope.slider.value) > 20) {
+            ClockModel.setViewTime($scope.slider.value);
+        }
 
         if (!ClockModel.isLive()) {
             getHistoricalData();
