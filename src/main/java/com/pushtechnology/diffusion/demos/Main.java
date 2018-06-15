@@ -16,34 +16,17 @@
 
 package com.pushtechnology.diffusion.demos;
 
-import com.pushtechnology.diffusion.client.Diffusion;
-import com.pushtechnology.diffusion.client.features.TimeSeries;
-import com.pushtechnology.diffusion.client.features.control.topics.TopicControl;
-import com.pushtechnology.diffusion.client.features.control.topics.TopicUpdateControl;
-import com.pushtechnology.diffusion.client.session.Session;
-import com.pushtechnology.diffusion.client.topics.details.TopicSpecification;
-import com.pushtechnology.diffusion.client.topics.details.TopicType;
-import com.pushtechnology.diffusion.datatype.json.JSON;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static com.pushtechnology.diffusion.client.features.control.topics.TopicUpdateControl.*;
-import static com.pushtechnology.diffusion.client.features.control.topics.TopicUpdateControl.Updater.*;
-import static com.pushtechnology.diffusion.datatype.DataTypes.INT64_DATATYPE_NAME;
-import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;
-import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.init;
 import static spark.Spark.port;
 import static spark.Spark.staticFileLocation;
+
+import java.util.Arrays;
+
+import com.pushtechnology.diffusion.client.Diffusion;
+import com.pushtechnology.diffusion.client.session.Session;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 /**
  * Main class to handle initialisation and stuff.
@@ -52,19 +35,42 @@ import static spark.Spark.staticFileLocation;
  */
 public class Main {
     public static void main(String[] args) {
+        final OptionParser optionParser = new OptionParser();
+
+        optionParser.acceptsAll(Arrays.asList("u", "url"), "URL of Diffusion server")
+            .withRequiredArg()
+            .ofType(String.class)
+            .defaultsTo("ws://localhost:8080");
+        optionParser.acceptsAll(Arrays.asList("p", "principal"), "Principal (username)")
+            .withRequiredArg()
+            .ofType(String.class)
+            .defaultsTo("control");
+        optionParser.acceptsAll(Arrays.asList("c", "credentials"), "Credentials (password)")
+            .withRequiredArg()
+            .ofType(String.class)
+            .defaultsTo("password");
+        // FB18994 - make a root topic configurable at run time as an argument
+
+        optionParser.acceptsAll(Arrays.asList("h", "?", "help"), "show help").forHelp();
+
+        final OptionSet options = optionParser.parse(args);
+
         // Start web server
         startWebServer();
 
-        // Connect to Diffusion
-        Session session = Diffusion.sessions().principal("control")
-                .credentials(Diffusion.credentials().password("password"))
-                .open("ws://localhost:8080");
+        final String principal = (String) options.valueOf("principal");
+        final String credentials = (String) options.valueOf("credentials");
 
+        // Connect to Diffusion
+        final Session session = Diffusion.sessions().principal(principal)
+                .credentials(Diffusion.credentials().password(credentials))
+                .open("ws://localhost:8080");
         // Load the race
-        Race race = RaceBuilder.create()
-                .fromProperties()
-                .setDiffusionSession(session)
-                .Build();
+        final Race race = RaceBuilder
+            .create()
+            .fromProperties()
+            .setDiffusionSession(session)
+            .setDiffusionSession(session).build();
 
         if (race == null) {
             System.out.println("ERROR: Failed to create race!");

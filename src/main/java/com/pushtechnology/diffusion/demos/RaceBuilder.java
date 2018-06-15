@@ -131,7 +131,7 @@ class RaceBuilder {
         return this;
     }
 
-    public Race Build() {
+    public Race build() {
         if (teamCount < 1) {
             throw new IllegalArgumentException("Need at least 1 team.");
         }

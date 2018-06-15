@@ -21,7 +21,7 @@
     "angular-nvd3": "^1.0.9",
     "angularjs-gauge": "^2.2.0",
     "angularjs-slider": "^6.4.1",
-    "diffusion": "^6.0.2",
+    "diffusion": "^6.1.0",
     "svg-path-properties": "^0.4.1"
   }
 }

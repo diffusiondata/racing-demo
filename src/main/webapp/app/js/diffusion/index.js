@@ -25,8 +25,13 @@ app.factory('Diffusion', ['$state', function($state) {
         _session : null
     };
 
-    Diffusion.connect = function(url, done) {
-        diffusion.connect(url).then(function(session) {
+    Diffusion.connect = function(properties, done) {
+        diffusion.connect({
+            host : properties.host,
+            port : properties.port,
+            principal : 'client',
+            credentials : properties.credentials
+        }).then(function(session) {
             Diffusion._session = session;
             done();
         });
