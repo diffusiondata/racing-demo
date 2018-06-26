@@ -138,7 +138,7 @@
                             <outputDirectory>${basedir}/target/docker-html/html</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/resuorces/html</directory>
+                                    <directory>src/main/resources/html</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
