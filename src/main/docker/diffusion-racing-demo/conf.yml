@@ -1,7 +1,7 @@
 packaging:
   add:
     - target/racing-demo-${project.version}.jar
-    - target/html/
+    - target/docker-html/
 
 ports:
   - 3142

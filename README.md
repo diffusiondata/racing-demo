@@ -20,7 +20,7 @@ using the default configuration which will accept connections on port
 
 Execute the jar in the target directory
 
-    java -jar target/racing-demo-1.0-SNAPSHOT.jar
+    cd target && java -jar racing-demo-1.0-SNAPSHOT.jar
 
 
 This will run a Java process that starts a local web server on port

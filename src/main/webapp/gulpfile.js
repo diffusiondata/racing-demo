@@ -8,7 +8,8 @@ var browserify = require('browserify'),
 var paths = {
     root : 'app/',
     src : 'app/js/',
-    dist : '../../../target/html/html'
+    dist : '../../../target/html',
+    distDocker : '../../../target/docker-html/html' 
 };
 
 gulp.task('browserify', function () {
@@ -16,6 +17,7 @@ gulp.task('browserify', function () {
   .bundle()
   .pipe(source('bundle.js'))
   .pipe(gulp.dest(paths.dist))
+  .pipe(gulp.dest(paths.distDocker))
   .pipe(connect.reload());
 });
 

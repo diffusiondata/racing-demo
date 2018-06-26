@@ -1,0 +1,10 @@
+<div class="row">
+    <div class="col-sm-auto">
+        <button class="btn btn-link" ng-click="togglePause()" ng-if="!isPaused()"><i class="icon-pause"></i></button>
+        <button class="btn btn-link" ng-click="startPlayback()" ng-if="isPaused()"><i class="icon-play"></i></button>
+        <button class="btn btn-link" ng-click="backToLive()" ng-if="!isLive()"><i class="icon-to-end"></i></button>
+    </div>
+    <div class="col">
+        <rzslider rz-slider-model="slider.value" rz-slider-options="slider.options"></rzslider>
+    </div>
+</div>

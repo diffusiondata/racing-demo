@@ -119,7 +119,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/html/html</outputDirectory>
+                            <outputDirectory>${basedir}/target/html</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/html</directory>
@@ -128,6 +128,23 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-resources-docker</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/docker-html/html</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/html</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
                  </executions>
             </plugin>
 
