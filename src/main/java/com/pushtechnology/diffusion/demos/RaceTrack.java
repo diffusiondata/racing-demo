@@ -16,13 +16,13 @@
 
 package com.pushtechnology.diffusion.demos;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 
 public class RaceTrack {
     private static Part loadPart(int index, JsonParser parser, double location) throws IOException {

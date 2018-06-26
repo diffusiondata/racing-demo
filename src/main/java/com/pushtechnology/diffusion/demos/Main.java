@@ -16,10 +16,11 @@
 
 package com.pushtechnology.diffusion.demos;
 
+import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.init;
 import static spark.Spark.port;
-import static spark.Spark.staticFileLocation;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import com.pushtechnology.diffusion.client.Diffusion;
@@ -60,11 +61,11 @@ public class Main {
 
         final String principal = (String) options.valueOf("principal");
         final String credentials = (String) options.valueOf("credentials");
-
+        final String url = (String) options.valueOf("url");
         // Connect to Diffusion
         final Session session = Diffusion.sessions().principal(principal)
                 .credentials(Diffusion.credentials().password(credentials))
-                .open("ws://localhost:8080");
+                .open(url);
         // Load the race
         final Race race = RaceBuilder
             .create()
@@ -84,7 +85,8 @@ public class Main {
 
     private static void startWebServer() {
         port(3142);
-        staticFileLocation("html");
+        System.out.println(Paths.get("html").toAbsolutePath());
+        externalStaticFileLocation("html");
         init();
     }
 }

@@ -8,7 +8,7 @@ var browserify = require('browserify'),
 var paths = {
     root : 'app/',
     src : 'app/js/',
-    dist : '../resources/html/'
+    dist : '../../../target/html/html'
 };
 
 gulp.task('browserify', function () {

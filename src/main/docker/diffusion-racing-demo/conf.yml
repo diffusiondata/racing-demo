@@ -1,9 +1,10 @@
 packaging:
   add:
     - target/racing-demo-${project.version}.jar
+    - target/html/
 
 ports:
   - 3142
 
 tags:
-  - tommclaughlan/diffusion-racing-demo:${project.version}
+  - pushtechnology/demos-racing:${project.version}

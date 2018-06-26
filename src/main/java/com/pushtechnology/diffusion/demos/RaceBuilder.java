@@ -16,15 +16,18 @@
 
 package com.pushtechnology.diffusion.demos;
 
-import com.pushtechnology.diffusion.client.session.Session;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+
+import com.pushtechnology.diffusion.client.session.Session;
 
 class RaceBuilder {
     static RaceBuilder create() {

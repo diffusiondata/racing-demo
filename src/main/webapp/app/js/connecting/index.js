@@ -19,9 +19,9 @@
 var app = require('angular').module('racing');
 
 app.controller('ConnectingController', ['$scope', '$state', '$timeout', '$http', 'Diffusion', 'TrackModel', 'CarsModel', function($scope, $state, $timeout, $http, Diffusion, TrackModel, CarsModel) {
-    $http.get('properties.json').then(function(response) {
+    $http.get('json/properties.json').then(function(response) {
+        console.log(response);
         Diffusion.connect(response.data, function() {
-
             var getTeams = function(topic, spec, nTeams) {
                 for (var i = 0; i < nTeams; ++i) {
                     Diffusion.session().stream('race/teams/' + i).asType(Diffusion.datatypes.string())
