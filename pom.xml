@@ -128,23 +128,6 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>copy-resources-docker</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/docker-html/html</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources/html</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-
                  </executions>
             </plugin>
 
@@ -178,40 +161,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.alexecollins.docker</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>2.11.24</version>
-                <executions>
-                    <execution>
-                        <id>docker-build-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <version>1.20</version> <!-- docker 1.8.x -->
-                    <removeIntermediateImages>false
-                    </removeIntermediateImages>
-                    <!--quiet>true</quiet--> <!-- there is a problem with later versions of docker-java -->
-                    <cache>true</cache>
-                </configuration>
-                <!-- Older versions are not available -->
-                <dependencies>
-                    <dependency>
-                        <groupId>com.kohlschutter.junixsocket</groupId>
-                        <artifactId>junixsocket-common</artifactId>
-                        <version>2.0.4</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.kohlschutter.junixsocket</groupId>
-                        <artifactId>junixsocket-native-common</artifactId>
-                        <version>2.0.4</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
