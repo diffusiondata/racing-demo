@@ -77,6 +77,8 @@ public class Car implements Comparable<Car> {
         this.accelerationTime = -1;
         this.decelerationTime = -2;
         this.elapsedReactionTime = 0.0;
+
+        this.lapTimes.clear();
     }
 
     String getDriverName() {
