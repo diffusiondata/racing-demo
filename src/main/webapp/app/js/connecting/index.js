@@ -24,32 +24,32 @@ app.controller('ConnectingController', ['$scope', '$state', '$timeout', '$http',
         Diffusion.connect(response.data, function() {
             var getTeams = function(topic, spec, nTeams) {
                 for (var i = 0; i < nTeams; ++i) {
-                    Diffusion.session().stream('race/teams/' + i).asType(Diffusion.datatypes.string())
+                    Diffusion.session().addStream('race/teams/' + i, Diffusion.datatypes.string())
                         .on('value', initTeam);
-    
-                    Diffusion.session().stream('race/teams/' + i + '/cars').asType(Diffusion.datatypes.int64())
+
+                    Diffusion.session().addStream('race/teams/' + i + '/cars', Diffusion.datatypes.int64())
                         .on('value', getCars);
                 }
             };
-    
+
             var initTeam = function(topic, spec, value) {
                 // topic is of form race/teams/<team number>
                 var parts = topic.split('/');
                 var team = parseInt(parts[2], 10);
                 CarsModel.addTeam(team, value);
             };
-    
+
             var getCars = function(topic, spec, nCars) {
                 // topic is of form race/teams/<team number>/cars
                 var parts = topic.split('/');
                 var team = parseInt(parts[2], 10);
-    
+
                 for(var j = 0; j < nCars; ++j) {
-                    Diffusion.session().stream('race/teams/' + team + '/cars/' + j).asType(Diffusion.datatypes.string())
+                    Diffusion.session().addStream('race/teams/' + team + '/cars/' + j, Diffusion.datatypes.string())
                         .on('value', initCar);
                 }
             };
-    
+
             var initCar = function(topic, spec, value) {
                 // topic is of form race/teams/<team number>/cars/<car number>
                 var parts = topic.split('/');
@@ -57,19 +57,19 @@ app.controller('ConnectingController', ['$scope', '$state', '$timeout', '$http',
                 var car = parseInt(parts[4], 10);
                 CarsModel.addCar(car, value, team);
             };
-    
-            Diffusion.session().stream('race').asType(Diffusion.datatypes.string())
+
+            Diffusion.session().addStream('race', Diffusion.datatypes.string())
                 .on('value', function(topic, spec, value) {
                     TrackModel.init(value);
                     $state.go('race');
                 });
-    
-            Diffusion.session().stream('race/teams').asType(Diffusion.datatypes.int64())
+
+            Diffusion.session().addStream('race/teams', Diffusion.datatypes.int64())
                 .on('value', getTeams);
-    
-            Diffusion.session().subscribe('race');
-            Diffusion.session().subscribe('race/teams');
-            Diffusion.session().subscribe('?race/teams/.*//');
+
+            Diffusion.session().select('race');
+            Diffusion.session().select('race/teams');
+            Diffusion.session().select('?race/teams/.*//');
         });
     })
     .catch(function(status) {

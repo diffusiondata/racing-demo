@@ -63,7 +63,7 @@ app.controller('RaceController', ['$scope', '$interval', 'TrackModel', 'Diffusio
     };
 
     if (Diffusion.session()) {
-        Diffusion.session().stream('race/updates').asType(Diffusion.datatypes.json())
+        Diffusion.session().addStream('race/updates', Diffusion.datatypes.json())
             .on('value', function(topic, spec, value) {
                 $scope.$apply(function() {
                     var val = value.value.get();
@@ -78,6 +78,6 @@ app.controller('RaceController', ['$scope', '$interval', 'TrackModel', 'Diffusio
 
                 });
             });
-        Diffusion.session().subscribe('race/updates');
+        Diffusion.session().select('race/updates');
     }
 }]);
