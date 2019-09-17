@@ -52,6 +52,7 @@ public class Race {
     private final TimeSeries timeSeries;
     private final DoubleRange reactionRange;
     private final int lapCount;
+    private final String retainedRange;
 
     private boolean isStartOfRace = true;
 
@@ -72,6 +73,7 @@ public class Race {
         this.teams = teams;
         this.topic = topic;
         this.lapCount = lapCount;
+        this.retainedRange = retainedRange;
 
         cars = new ArrayList<>();
         sorted = new ArrayList<>();
@@ -141,7 +143,7 @@ public class Race {
                 });
     }
 
-    void start() {
+    void start() throws InterruptedException, ExecutionException, TimeoutException{
         final long nanoFrequency = updateFrequency * 1000000;
 
         long current = System.nanoTime();
@@ -182,12 +184,13 @@ public class Race {
         }
     }
 
-    private void reset() {
+    private void reset() throws InterruptedException, ExecutionException, TimeoutException{
         isStartOfRace = true;
 
         for (Car car : cars) {
             car.reset();
         }
+        createTopics(retainedRange);
     }
 
     private void update(final long elapsed) {
@@ -239,6 +242,8 @@ public class Race {
         final TopicUpdateControl.ValueUpdater<Long> longUpdater = topicUpdateControl.updater().valueUpdater(Long.class);
         final TopicUpdateControl.ValueUpdater<String> stringUpdater = topicUpdateControl.updater().valueUpdater(String.class);
 
+
+        topicControl.removeTopics("?"+topic+"//");
         // Add track filename
         // Note: we remove the html prefix to not confuse the webserver
         final String trackFile;
