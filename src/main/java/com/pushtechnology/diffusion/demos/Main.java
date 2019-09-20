@@ -22,8 +22,6 @@ import static spark.Spark.port;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import com.pushtechnology.diffusion.client.Diffusion;
 import com.pushtechnology.diffusion.client.session.Session;
@@ -37,7 +35,7 @@ import joptsimple.OptionSet;
  *
  */
 public class Main {
-    public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
+    public static void main(String[] args){
         final OptionParser optionParser = new OptionParser();
 
         optionParser.acceptsAll(Arrays.asList("u", "url"), "URL of Diffusion server")
