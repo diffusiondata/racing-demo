@@ -49,11 +49,12 @@ app.directive('statisticsPanel', function() {
     };
 });
 
-app.controller('RaceController', ['$scope', '$interval', 'TrackModel', 'Diffusion', 'CarsModel', 'ClockModel', function($scope, $interval, TrackModel, Diffusion, CarsModel, ClockModel) {
+app.controller('RaceController', ['$scope', '$http', '$interval', 'TrackModel', 'Diffusion', 'CarsModel', 'ClockModel', 'TopicModel', function($scope, $http, $interval, TrackModel, Diffusion, CarsModel, ClockModel, TopicModel) {
     $scope.getTrack = function() {
         return TrackModel.getPath();
     };
 
+    var rootTopic = TopicModel.getTopic();
     $scope.getDrawables = function() {
         return {
             path : TrackModel.getPath(),
@@ -63,7 +64,7 @@ app.controller('RaceController', ['$scope', '$interval', 'TrackModel', 'Diffusio
     };
 
     if (Diffusion.session()) {
-        Diffusion.session().addStream('race/updates', Diffusion.datatypes.json())
+        Diffusion.session().addStream(rootTopic["Topic"] + '/updates', Diffusion.datatypes.json())
             .on('value', function(topic, spec, value) {
                 $scope.$apply(function() {
                     var val = value.value.get();
@@ -78,6 +79,6 @@ app.controller('RaceController', ['$scope', '$interval', 'TrackModel', 'Diffusio
 
                 });
             });
-        Diffusion.session().select('race/updates');
+        Diffusion.session().select(rootTopic["Topic"] + '/updates');
     }
 }]);

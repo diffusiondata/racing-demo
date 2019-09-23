@@ -62,10 +62,10 @@ class RaceBuilder {
         this.randomiser = randomiser;
     }
 
-    RaceBuilder fromProperties() {
+    RaceBuilder fromProperties(String topic) {
         Properties properties = new Properties();
         InputStream inputStream = null;
-
+        this.topic = topic;
         try {
             String filename = "config/startup.properties";
             inputStream = Main.class.getClassLoader().getResourceAsStream(filename);
@@ -80,7 +80,6 @@ class RaceBuilder {
             carCount = readUnsignedInteger(properties, "cars"); // Read number of cars per team
             lapCount = readUnsignedInteger(properties, "laps"); // Read number of laps per race
             updateFrequency = readUnsignedLong(properties, "updatefreq"); // Read update frequency in milliseconds
-            topic = readString(properties, "topic"); // Read topic
             retainedRange = readString(properties, "retainedrange"); // Read retained range for time series topics
             speedRange = readDoubleRange(properties, "minspeed", "maxspeed");  // Read speed range
             corneringRange = readDoubleRange(properties, "mincornering", "maxcornering");  // Read cornering range

@@ -19,6 +19,7 @@ package com.pushtechnology.diffusion.demos;
 import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.init;
 import static spark.Spark.port;
+import static spark.Spark.get;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -39,17 +40,21 @@ public class Main {
         final OptionParser optionParser = new OptionParser();
 
         optionParser.acceptsAll(Arrays.asList("u", "url"), "URL of Diffusion server")
-            .withRequiredArg()
-            .ofType(String.class)
-            .defaultsTo("ws://localhost:8080");
+                .withRequiredArg()
+                .ofType(String.class)
+                .defaultsTo("ws://localhost:8080");
         optionParser.acceptsAll(Arrays.asList("p", "principal"), "Principal (username)")
-            .withRequiredArg()
-            .ofType(String.class)
-            .defaultsTo("control");
+                .withRequiredArg()
+                .ofType(String.class)
+                .defaultsTo("control");
         optionParser.acceptsAll(Arrays.asList("c", "credentials"), "Credentials (password)")
-            .withRequiredArg()
-            .ofType(String.class)
-            .defaultsTo("password");
+                .withRequiredArg()
+                .ofType(String.class)
+                .defaultsTo("password");
+        optionParser.acceptsAll(Arrays.asList("r", "root"), "Topic tree root topic name")
+                .withRequiredArg()
+                .ofType(String.class)
+                .defaultsTo("Demos/Race");
         // FB18994 - make a root topic configurable at run time as an argument
 
         optionParser.acceptsAll(Arrays.asList("h", "?", "help"), "show help").forHelp();
@@ -57,21 +62,22 @@ public class Main {
         final OptionSet options = optionParser.parse(args);
 
         // Start web server
-        startWebServer();
+        startWebServer(options);
 
         final String principal = (String) options.valueOf("principal");
         final String credentials = (String) options.valueOf("credentials");
         final String url = (String) options.valueOf("url");
+        final String topic = (String) options.valueOf("root");
         // Connect to Diffusion
         final Session session = Diffusion.sessions().principal(principal)
                 .credentials(Diffusion.credentials().password(credentials))
                 .open(url);
         // Load the race
         final Race race = RaceBuilder
-            .create()
-            .fromProperties()
-            .setDiffusionSession(session)
-            .setDiffusionSession(session).build();
+                .create()
+                .fromProperties(topic)
+                .setDiffusionSession(session)
+                .setDiffusionSession(session).build();
 
         if (race == null) {
             System.out.println("ERROR: Failed to create race!");
@@ -83,10 +89,11 @@ public class Main {
         race.start();
     }
 
-    private static void startWebServer() {
+    private static void startWebServer(OptionSet options) {
         port(3142);
         System.out.println(Paths.get("html").toAbsolutePath());
         externalStaticFileLocation("html");
+        get("/race/topic", (req, res) -> options.valueOf("root"));
         init();
     }
 }

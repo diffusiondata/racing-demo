@@ -81,7 +81,10 @@ app.factory('ClockModel', function() {
     return ClockModel;
 });
 
-app.controller('ClockController', ['$scope', '$interval', 'ClockModel', 'Diffusion', 'CarsModel', function($scope, $interval, ClockModel, Diffusion, CarsModel) {
+app.controller('ClockController', ['$scope', '$http', '$interval', 'ClockModel', 'Diffusion', 'CarsModel', 'TopicModel', function($scope, $http, $interval, ClockModel, Diffusion, CarsModel, TopicModel) {
+
+    var rootTopic = TopicModel.getTopic();
+
     $scope.isPaused = ClockModel.isPaused;
 
     $scope.backToLive = function() {
@@ -123,26 +126,27 @@ app.controller('ClockController', ['$scope', '$interval', 'ClockModel', 'Diffusi
             .from(new Date(ClockModel.getViewTime()))
             .next(1)
             .as(Diffusion.datatypes.json())
-            .selectFrom('race/updates').then(function(result) {
-                var val = result.events[0].value.get();
-                val.forEach(function(car) {
-                    CarsModel.updateCarPosition(car);
-                });
-            }, function(err) {
-                console.log(err);
+            .selectFrom(rootTopic["Topic"] + '/updates').then(function(result) {
+            var val = result.events[0].value.get();
+            val.forEach(function(car) {
+                CarsModel.updateCarPosition(car);
             });
+        }, function(err) {
+            console.log(err);
+        });
     };
 
     var setStart = function() {
+
         Diffusion.session().timeseries.rangeQuery()
             .fromStart()
             .next(1)
             .as(Diffusion.datatypes.json())
-            .selectFrom('race/updates').then(function(result) {
-                ClockModel.setStartTime(result.events[0].timestamp);
-            }, function(err) {
-                console.log(err);
-            });
+            .selectFrom(rootTopic["Topic"] + '/updates').then(function(result) {
+            ClockModel.setStartTime(result.events[0].timestamp);
+        }, function(err) {
+            console.log(err);
+        });
 
         if (ClockModel.isPlayback() && !ClockModel.isPaused() && !ClockModel.isLive()) {
             $scope.slider.value += ClockModel.replayTick;
