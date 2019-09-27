@@ -19,7 +19,7 @@
           ["log", "error", "info"] }
     ],
     "linebreak-style": [
-      "error", "windows"
+      "error", "unix"
     ],
     "no-trailing-spaces": "error",
     "no-multiple-empty-lines": "error",
