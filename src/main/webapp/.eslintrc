@@ -18,9 +18,6 @@
       "error", { "allow":
           ["log", "error", "info"] }
     ],
-    "linebreak-style": [
-      "error", "unix"
-    ],
     "no-trailing-spaces": "error",
     "no-multiple-empty-lines": "error",
     "no-plusplus": [
