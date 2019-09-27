@@ -14,35 +14,34 @@
  limitations under the License.
  */
 
-'use strict';
 
-var app = require('angular').module('racing');
+const app = require('angular').module('racing');
 
-var diffusion = require('diffusion');
+const diffusion = require('diffusion');
 
-app.factory('Diffusion', ['$state', function($state) {
-    var Diffusion = {
-        _session : null
+app.factory('Diffusion', ['$state', ($state) => {
+    const Diffusion = {
+        sess: null,
     };
 
-    Diffusion.connect = function(properties, done) {
+    Diffusion.connect = (properties, done) => {
         diffusion.connect({
-            host : properties.host,
-            port : properties.port,
-            principal : 'client',
-            credentials : properties.credentials
-        }).then(function(session) {
-            Diffusion._session = session;
+            host: properties.host,
+            port: properties.port,
+            principal: 'client',
+            credentials: properties.credentials,
+        }).then((session) => {
+            Diffusion.sess = session;
             done();
         });
     };
 
-    Diffusion.session = function() {
-        if (!this._session || !this._session.isConnected()) {
+    Diffusion.session = () => {
+        if (!Diffusion.sess || !Diffusion.sess.isConnected()) {
             $state.go('connecting');
             return false;
         }
-        return this._session;
+        return Diffusion.sess;
     };
 
     Diffusion.datatypes = diffusion.datatypes;

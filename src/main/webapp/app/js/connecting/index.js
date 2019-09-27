@@ -14,85 +14,85 @@
  limitations under the License.
  */
 
-'use strict';
 
-var app = require('angular').module('racing');
+const app = require('angular').module('racing');
 
-app.factory('TopicModel', ['$http', function($http){
-    var TopicModel = {
-        _rootTopic : {Topic : ""}
-    }
+app.factory('TopicModel', ['$http', ($http) => {
+    const TopicModel = {
+        rootTopic: { Topic: '' },
+    };
 
-    TopicModel.setTopic = function () {
-       $http.get("/race/topic").then(function(x) { TopicModel._rootTopic.Topic = x.data});
-    }
+    TopicModel.setTopic = () => {
+        $http.get('/race/topic').then((x) => { TopicModel.rootTopic.Topic = x.data; });
+    };
 
-    TopicModel.getTopic = function () {
-        return TopicModel._rootTopic;
-    }
+    TopicModel.getTopic = () => TopicModel.rootTopic;
+
     return TopicModel;
 }]);
 
-app.controller('ConnectingController', ['$scope', '$state', '$timeout', '$http', 'Diffusion', 'TrackModel', 'CarsModel', 'TopicModel', function($scope, $state, $timeout, $http, Diffusion, TrackModel, CarsModel, TopicModel) {
+app.controller('ConnectingController',
+    ['$scope', '$state', '$timeout', '$http', 'Diffusion', 'TrackModel', 'CarsModel', 'TopicModel',
+        function controller($scope, $state, $timeout, $http, Diffusion, TrackModel, CarsModel, TopicModel) {
+            TopicModel.setTopic();
 
-    TopicModel.setTopic();
-    var rootTopic = TopicModel.getTopic();
 
-    $http.get('json/properties.json').then(function(response) {
-         var teamPosition;
+            $http.get('json/properties.json').then((response) => {
+                Diffusion.connect(response.data, () => {
+                    const rootTopic = TopicModel.getTopic().Topic;
+                    const teamPosition = rootTopic.split('/').length + 1;
 
-        Diffusion.connect(response.data, function() {
-            teamPosition = rootTopic["Topic"].split('/').length + 1;
-            var getTeams = function(topic, spec, nTeams) {
-                for (var i = 0; i < nTeams; ++i) {
-                    Diffusion.session().addStream(rootTopic["Topic"] + '/teams/' + i, Diffusion.datatypes.string())
-                        .on('value', initTeam);
+                    const initCar = (topic, spec, value) => {
+                        // topic is of form race/teams/<team number>/cars/<car number>
+                        const parts = topic.split('/');
+                        const team = parseInt(parts[teamPosition], 10);
+                        const car = parseInt(parts[teamPosition + 2], 10);
+                        CarsModel.addCar(car, value, team);
+                    };
 
-                    Diffusion.session().addStream( rootTopic["Topic"] + '/teams/' + i + '/cars', Diffusion.datatypes.int64())
-                        .on('value', getCars);
-                }
-            };
+                    const initTeam = (topic, spec, value) => {
+                        // topic is of form race/teams/<team number>
+                        const parts = topic.split('/');
+                        const team = parseInt(parts[teamPosition], 10);
+                        CarsModel.addTeam(team, value);
+                    };
 
-            var initTeam = function(topic, spec, value) {
-                // topic is of form race/teams/<team number>
-                var parts = topic.split('/');
-                var team = parseInt(parts[teamPosition], 10);
-                CarsModel.addTeam(team, value);
-            };
+                    const getCars = (topic, spec, nCars) => {
+                        // topic is of form race/teams/<team number>/cars
+                        const parts = topic.split('/');
+                        const team = parseInt(parts[teamPosition], 10);
+                        for (let j = 0; j < nCars; ++j) {
+                            Diffusion.session()
+                                .addStream(`${rootTopic}/teams/${team}/cars/${j}`, Diffusion.datatypes.string())
+                                .on('value', initCar);
+                        }
+                    };
+                    const getTeams = (topic, spec, nTeams) => {
+                        for (let i = 0; i < nTeams; ++i) {
+                            Diffusion.session().addStream(`${rootTopic}/teams/${i}`, Diffusion.datatypes.string())
+                                .on('value', initTeam);
 
-            var getCars = function(topic, spec, nCars) {
-                // topic is of form race/teams/<team number>/cars
-                var parts = topic.split('/');
-                var team = parseInt(parts[teamPosition], 10);
-                for(var j = 0; j < nCars; ++j) {
-                    Diffusion.session().addStream(rootTopic["Topic"] + '/teams/' + team + '/cars/' + j, Diffusion.datatypes.string())
-                        .on('value', initCar);
-                }
-            };
+                            Diffusion.session().addStream(`${rootTopic}/teams/${i}/cars`, Diffusion.datatypes.int64())
+                                .on('value', getCars);
+                        }
+                    };
 
-            var initCar = function(topic, spec, value) {
-                // topic is of form race/teams/<team number>/cars/<car number>
-                var parts = topic.split('/');
-                var team = parseInt(parts[teamPosition], 10);
-                var car = parseInt(parts[teamPosition+2], 10);
-                CarsModel.addCar(car, value, team);
-            };
 
-            Diffusion.session().addStream(rootTopic["Topic"], Diffusion.datatypes.string())
-                .on('value', function(topic, spec, value) {
-                    TrackModel.init(value);
-                    $state.go('race');
+                    Diffusion.session().addStream(rootTopic, Diffusion.datatypes.string())
+                        .on('value', (topic, spec, value) => {
+                            TrackModel.init(value);
+                            $state.go('race');
+                        });
+
+                    Diffusion.session().addStream(`${rootTopic}/teams`, Diffusion.datatypes.int64())
+                        .on('value', getTeams);
+
+                    Diffusion.session().select(rootTopic);
+                    Diffusion.session().select(`${rootTopic}/teams`);
+                    Diffusion.session().select(`?${rootTopic}/teams/.*//`);
                 });
-
-            Diffusion.session().addStream(rootTopic["Topic"] + '/teams', Diffusion.datatypes.int64())
-                .on('value', getTeams);
-
-            Diffusion.session().select(rootTopic["Topic"]);
-            Diffusion.session().select(rootTopic["Topic"] + '/teams');
-            Diffusion.session().select('?' + rootTopic["Topic"] + '/teams/.*//');
-        });
-    })
-        .catch(function(status) {
-            console.log('Could not load json/properties.json file', status);
-        });
-}]);
+            })
+                .catch((status) => {
+                    console.log('Could not load json/properties.json file', status);
+                });
+        }]);

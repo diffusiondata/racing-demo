@@ -1,0 +1,36 @@
+{
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jquery": true
+  },
+  "extends" : "airbnb",
+  "rules" : {
+    "indent": [
+      "error",
+      4
+    ],
+    "max-len": [
+      "error", {"code": 120 }
+    ],
+    "no-console": [
+      "error", { "allow":
+          ["log", "error", "info"] }
+    ],
+    "linebreak-style": [
+      "error", "unix"
+    ],
+    "no-trailing-spaces": "error",
+    "no-multiple-empty-lines": "error",
+    "no-plusplus": [
+      "error", {"allowForLoopAfterthoughts": true }
+    ],
+    "quotes": [
+      "error" , "single"
+    ],
+    "func-names": [
+      "error", "as-needed"
+    ]
+  }
+}

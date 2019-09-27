@@ -14,71 +14,61 @@
  limitations under the License.
  */
 
-'use strict';
 
-var app = require('angular').module('racing');
+const app = require('angular').module('racing');
 
-app.directive('raceMap', function() {
-    return {
-        restrict : 'E',
-        templateUrl : 'views/track.html'
-    };
-});
+app.directive('raceMap', () => ({
+    restrict: 'E',
+    templateUrl: 'views/track.html',
+}));
 
-app.directive('leaderboard', function() {
-    return {
-        restrict : 'E',
-        templateUrl : 'views/leaderboard.html',
-        controller : 'LeaderboardController'
-    };
-});
+app.directive('leaderboard', () => ({
+    restrict: 'E',
+    templateUrl: 'views/leaderboard.html',
+    controller: 'LeaderboardController',
+}));
 
-app.directive('scrubber', function() {
-    return {
-        restrict : 'E',
-        templateUrl : 'views/scrubber.html',
-        controller : 'ClockController'
-    };
-});
+app.directive('scrubber', () => ({
+    restrict: 'E',
+    templateUrl: 'views/scrubber.html',
+    controller: 'ClockController',
+}));
 
-app.directive('statisticsPanel', function() {
-    return {
-        restrict : 'E',
-        templateUrl : 'views/stats.html',
-        controller : 'StatsController'
-    };
-});
+app.directive('statisticsPanel', () => ({
+    restrict: 'E',
+    templateUrl: 'views/stats.html',
+    controller: 'StatsController',
+}));
 
-app.controller('RaceController', ['$scope', '$http', '$interval', 'TrackModel', 'Diffusion', 'CarsModel', 'ClockModel', 'TopicModel', function($scope, $http, $interval, TrackModel, Diffusion, CarsModel, ClockModel, TopicModel) {
-    $scope.getTrack = function() {
-        return TrackModel.getPath();
-    };
+app.controller('RaceController',
+    ['$scope', '$http', '$interval', 'TrackModel', 'Diffusion', 'CarsModel', 'ClockModel', 'TopicModel',
+        function controller($scope, $http, $interval, TrackModel, Diffusion, CarsModel, ClockModel, TopicModel) {
+            $scope.getTrack = () => TrackModel.getPath();
 
-    var rootTopic = TopicModel.getTopic();
-    $scope.getDrawables = function() {
-        return {
-            path : TrackModel.getPath(),
-            cars : CarsModel.getCars(),
-            startingLine : TrackModel.getStartingLine()
-        };
-    };
+            const rootTopic = TopicModel.getTopic().Topic;
+            $scope.getDrawables = function drawable() {
+                return {
+                    path: TrackModel.getPath(),
+                    cars: CarsModel.getCars(),
+                    startingLine: TrackModel.getStartingLine(),
+                };
+            };
 
-    if (Diffusion.session()) {
-        Diffusion.session().addStream(rootTopic["Topic"] + '/updates', Diffusion.datatypes.json())
-            .on('value', function(topic, spec, value) {
-                $scope.$apply(function() {
-                    var val = value.value.get();
-                    var time = value.timestamp;
+            if (Diffusion.session()) {
+                Diffusion.session().addStream(`${rootTopic}/updates`, Diffusion.datatypes.json())
+                    .on('value', (topic, spec, value) => {
+                        $scope.$apply(() => {
+                            const val = value.value.get();
+                            const time = value.timestamp;
 
-                    if (!ClockModel.isPaused() && ClockModel.isLive() && TrackModel.properties) {
-                        val.forEach(function(car) {
-                            CarsModel.updateCarPosition(car);
+                            if (!ClockModel.isPaused() && ClockModel.isLive() && TrackModel.properties) {
+                                val.forEach((car) => {
+                                    CarsModel.updateCarPosition(car);
+                                });
+                            }
+                            ClockModel.setLiveTime(time);
                         });
-                    }
-                    ClockModel.setLiveTime(time);
-
-                });
-            });
-        Diffusion.session().select(rootTopic["Topic"] + '/updates');
-    }
-}]);
+                    });
+                Diffusion.session().select(`${rootTopic}/updates`);
+            }
+        }]);

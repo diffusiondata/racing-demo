@@ -14,38 +14,30 @@
  limitations under the License.
  */
 
-'use strict';
 
-var app = require('angular').module('racing');
+const app = require('angular').module('racing');
 
-app.controller('LeaderboardController', ['$scope', 'CarsModel', function($scope, CarsModel) {
-    $scope.getOrderedCars = function() {
-        return CarsModel.getCars().sort(function(a, b) {
-            return a.pos - b.pos;
-        });
-    };
+app.controller('LeaderboardController', ['$scope', 'CarsModel', function controller($scope, CarsModel) {
+    $scope.getOrderedCars = () => CarsModel.getCars().sort((a, b) => a.pos - b.pos);
 
-    $scope.selectCar = function(car, team) {
-        var sel = CarsModel.getSelectedCar();
+    $scope.selectCar = (car, team) => {
+        const sel = CarsModel.getSelectedCar();
         if (sel && sel.id === car && sel.teamid === team) {
             CarsModel.unselectCar(car, team);
-        }
-        else {
+        } else {
             CarsModel.selectCar(car, team);
         }
     };
 
-    $scope.selectedCar = function(car, team) {
-        var selected = CarsModel.getSelectedCar();
+    $scope.selectedCar = (car, team) => {
+        const selected = CarsModel.getSelectedCar();
         if (!selected) {
             return false;
         }
         return selected.id === car && selected.teamid === team;
     };
 
-    $scope.carSelected = function() {
-        return !!CarsModel.getSelectedCar();
-    };
+    $scope.carSelected = () => !!CarsModel.getSelectedCar();
 
     $scope.getTeamName = CarsModel.getTeamName;
 

@@ -16,13 +16,13 @@
 
 package com.pushtechnology.diffusion.demos;
 
+import static java.util.Arrays.asList;
 import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.init;
 import static spark.Spark.port;
 import static spark.Spark.get;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import com.pushtechnology.diffusion.client.Diffusion;
 import com.pushtechnology.diffusion.client.session.Session;
@@ -30,34 +30,40 @@ import com.pushtechnology.diffusion.client.session.Session;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Main class to handle initialisation and stuff.
  * Here we also start the web server to serve our JS bits.
  *
  */
 public class Main {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args){
         final OptionParser optionParser = new OptionParser();
 
-        optionParser.acceptsAll(Arrays.asList("u", "url"), "URL of Diffusion server")
+        optionParser.acceptsAll(asList("u", "url"), "URL of Diffusion server")
                 .withRequiredArg()
                 .ofType(String.class)
                 .defaultsTo("ws://localhost:8080");
-        optionParser.acceptsAll(Arrays.asList("p", "principal"), "Principal (username)")
+        optionParser.acceptsAll(asList("p", "principal"), "Principal (username)")
                 .withRequiredArg()
                 .ofType(String.class)
                 .defaultsTo("control");
-        optionParser.acceptsAll(Arrays.asList("c", "credentials"), "Credentials (password)")
+        optionParser.acceptsAll(asList("c", "credentials"), "Credentials (password)")
                 .withRequiredArg()
                 .ofType(String.class)
                 .defaultsTo("password");
-        optionParser.acceptsAll(Arrays.asList("r", "root"), "Topic tree root topic name")
+        optionParser.acceptsAll(asList("r", "root"), "Topic tree root topic name")
                 .withRequiredArg()
                 .ofType(String.class)
                 .defaultsTo("Demos/Race");
         // FB18994 - make a root topic configurable at run time as an argument
 
-        optionParser.acceptsAll(Arrays.asList("h", "?", "help"), "show help").forHelp();
+        optionParser.acceptsAll(asList("h", "?", "help"), "show help").forHelp();
 
         final OptionSet options = optionParser.parse(args);
 
@@ -68,6 +74,7 @@ public class Main {
         final String credentials = (String) options.valueOf("credentials");
         final String url = (String) options.valueOf("url");
         final String topic = (String) options.valueOf("root");
+        LOG.info(((String) options.valueOf("root")).toUpperCase());
         // Connect to Diffusion
         final Session session = Diffusion.sessions().principal(principal)
                 .credentials(Diffusion.credentials().password(credentials))
@@ -80,7 +87,7 @@ public class Main {
                 .setDiffusionSession(session).build();
 
         if (race == null) {
-            System.out.println("ERROR: Failed to create race!");
+            LOG.error("Failed to create race!");
             System.exit(42);
             return;
         }
@@ -91,7 +98,7 @@ public class Main {
 
     private static void startWebServer(OptionSet options) {
         port(3142);
-        System.out.println(Paths.get("html").toAbsolutePath());
+        LOG.info(Paths.get("html").toAbsolutePath().toString());
         externalStaticFileLocation("html");
         get("/race/topic", (req, res) -> options.valueOf("root"));
         init();

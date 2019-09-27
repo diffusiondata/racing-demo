@@ -14,172 +14,156 @@
  limitations under the License.
  */
 
-'use strict';
 
-var app = require('angular').module('racing');
+const app = require('angular').module('racing');
 
-app.factory('ClockModel', function() {
-    var ClockModel = {
-        paused : false,
-        live : true,
-        playback : false,
-        replayTick : 50
+app.factory('ClockModel', () => {
+    const ClockModel = {
+        paused: false,
+        live: true,
+        playback: false,
+        replayTick: 50,
     };
 
-    ClockModel.togglePause = function() {
+    ClockModel.togglePause = () => {
         ClockModel.paused = !ClockModel.paused;
     };
 
-    ClockModel.setPaused = function(paused) {
+    ClockModel.setPaused = (paused) => {
         ClockModel.paused = paused;
     };
 
-    ClockModel.setLive = function(live) {
+    ClockModel.setLive = (live) => {
         ClockModel.live = live;
     };
 
-    ClockModel.setPlayback = function(playback) {
+    ClockModel.setPlayback = (playback) => {
         ClockModel.playback = playback;
     };
 
-    ClockModel.isPlayback = function() {
-        return ClockModel.playback;
-    };
+    ClockModel.isPlayback = () => ClockModel.playback;
 
-    ClockModel.isPaused = function() {
-        return ClockModel.paused;
-    };
+    ClockModel.isPaused = () => ClockModel.paused;
 
-    ClockModel.isLive = function() {
-        return ClockModel.live;
-    };
+    ClockModel.isLive = () => ClockModel.live;
 
-    ClockModel.setStartTime = function(time) {
+    ClockModel.setStartTime = (time) => {
         ClockModel.start = time;
     };
 
-    ClockModel.setViewTime = function(time) {
+    ClockModel.setViewTime = (time) => {
         ClockModel.view = time;
     };
 
-    ClockModel.setLiveTime = function(time) {
+    ClockModel.setLiveTime = (time) => {
         ClockModel.latest = time;
     };
 
-    ClockModel.getStartTime = function() {
-        return ClockModel.start;
-    };
+    ClockModel.getStartTime = () => ClockModel.start;
 
-    ClockModel.getViewTime = function() {
-        return ClockModel.view;
-    };
+    ClockModel.getViewTime = () => ClockModel.view;
 
-    ClockModel.getLiveTime = function() {
-        return ClockModel.latest;
-    };
+    ClockModel.getLiveTime = () => ClockModel.latest;
 
     return ClockModel;
 });
 
-app.controller('ClockController', ['$scope', '$http', '$interval', 'ClockModel', 'Diffusion', 'CarsModel', 'TopicModel', function($scope, $http, $interval, ClockModel, Diffusion, CarsModel, TopicModel) {
+app.controller('ClockController', ['$scope', '$http', '$interval', 'ClockModel', 'Diffusion', 'CarsModel', 'TopicModel',
+    function controller($scope, $http, $interval, ClockModel, Diffusion, CarsModel, TopicModel) {
+        const rootTopic = TopicModel.getTopic().Topic;
 
-    var rootTopic = TopicModel.getTopic();
+        $scope.isPaused = ClockModel.isPaused;
 
-    $scope.isPaused = ClockModel.isPaused;
+        $scope.backToLive = () => {
+            ClockModel.setLive(true);
+            ClockModel.setPaused(false);
+            ClockModel.setPlayback(false);
+        };
 
-    $scope.backToLive = function() {
-        ClockModel.setLive(true);
-        ClockModel.setPaused(false);
-        ClockModel.setPlayback(false);
-    };
+        $scope.startPlayback = () => {
+            ClockModel.setPlayback(true);
+            ClockModel.setPaused(false);
+        };
 
-    $scope.startPlayback = function() {
-        ClockModel.setPlayback(true);
-        ClockModel.setPaused(false);
-    };
+        $scope.togglePause = () => {
+            ClockModel.togglePause();
+            ClockModel.setPlayback(!ClockModel.isPaused());
+            ClockModel.setLive(false);
+        };
 
-    $scope.togglePause = function() {
-        ClockModel.togglePause();
-        ClockModel.setPlayback(!ClockModel.isPaused());
-        ClockModel.setLive(false);
-    };
-
-    $scope.slider = {
-        value : 1,
-        options :{
-            floor : 0,
-            ceil : 1,
-            onStart : function() {
-                ClockModel.setLive(false);
-                ClockModel.setPaused(true);
+        $scope.slider = {
+            value: 1,
+            options: {
+                floor: 0,
+                ceil: 1,
+                onStart() {
+                    ClockModel.setLive(false);
+                    ClockModel.setPaused(true);
+                },
+                step: 50,
+                translate(value) {
+                    const date = new Date(value);
+                    return date.toLocaleTimeString();
+                },
             },
-            step : 50,
-            translate : function(value) {
-                var date = new Date(value);
-                return date.toLocaleTimeString();
+        };
+
+        const getHistoricalData = () => {
+            Diffusion.session().timeseries.rangeQuery()
+                .from(new Date(ClockModel.getViewTime()))
+                .next(1)
+                .as(Diffusion.datatypes.json())
+                .selectFrom(`${rootTopic}/updates`)
+                .then((result) => {
+                    const val = result.events[0].value.get();
+                    val.forEach((car) => {
+                        CarsModel.updateCarPosition(car);
+                    });
+                }, (err) => {
+                    console.log(err);
+                });
+        };
+
+        const setStart = () => {
+            Diffusion.session().timeseries.rangeQuery()
+                .fromStart()
+                .next(1)
+                .as(Diffusion.datatypes.json())
+                .selectFrom(`${rootTopic}/updates`)
+                .then((result) => {
+                    ClockModel.setStartTime(result.events[0].timestamp);
+                }, (err) => {
+                    console.log(err);
+                });
+
+            if (ClockModel.isPlayback() && !ClockModel.isPaused() && !ClockModel.isLive()) {
+                $scope.slider.value += ClockModel.replayTick;
             }
-        }
-    };
+        };
 
-    var getHistoricalData = function() {
-        Diffusion.session().timeseries.rangeQuery()
-            .from(new Date(ClockModel.getViewTime()))
-            .next(1)
-            .as(Diffusion.datatypes.json())
-            .selectFrom(rootTopic["Topic"] + '/updates').then(function(result) {
-            var val = result.events[0].value.get();
-            val.forEach(function(car) {
-                CarsModel.updateCarPosition(car);
-            });
-        }, function(err) {
-            console.log(err);
-        });
-    };
+        $scope.$watch(() => `${ClockModel.getStartTime()} ${ClockModel.getLiveTime()}`, () => {
+            $scope.slider.options.floor = ClockModel.getStartTime();
+            $scope.slider.options.ceil = ClockModel.getLiveTime();
 
-    var setStart = function() {
-
-        Diffusion.session().timeseries.rangeQuery()
-            .fromStart()
-            .next(1)
-            .as(Diffusion.datatypes.json())
-            .selectFrom(rootTopic["Topic"] + '/updates').then(function(result) {
-            ClockModel.setStartTime(result.events[0].timestamp);
-        }, function(err) {
-            console.log(err);
+            if (!ClockModel.isLive() && $scope.slider.value < ClockModel.getStartTime()) {
+                $scope.slider.value = ClockModel.getStartTime();
+            } else if (ClockModel.isLive() && !ClockModel.isPaused()) {
+                $scope.slider.value = ClockModel.getLiveTime();
+            }
         });
 
-        if (ClockModel.isPlayback() && !ClockModel.isPaused() && !ClockModel.isLive()) {
-            $scope.slider.value += ClockModel.replayTick;
+        $scope.$watch(() => $scope.slider.value, () => {
+            if (!ClockModel.getViewTime() || Math.abs(ClockModel.getViewTime() - $scope.slider.value) > 20) {
+                ClockModel.setViewTime($scope.slider.value);
+            }
+
+            if (!ClockModel.isLive()) {
+                getHistoricalData();
+            }
+        });
+
+        if (Diffusion.session()) {
+            $interval(setStart, ClockModel.replayTick);
+            setStart();
         }
-    };
-
-    $scope.$watch(function() {
-        return ClockModel.getStartTime() + ' ' + ClockModel.getLiveTime();
-    }, function() {
-        $scope.slider.options.floor = ClockModel.getStartTime();
-        $scope.slider.options.ceil = ClockModel.getLiveTime();
-
-        if (!ClockModel.isLive() && $scope.slider.value < ClockModel.getStartTime()) {
-            $scope.slider.value = ClockModel.getStartTime();
-        } else if (ClockModel.isLive() && !ClockModel.isPaused()) {
-            $scope.slider.value = ClockModel.getLiveTime();
-        }
-    });
-
-    $scope.$watch(function() {
-        return $scope.slider.value;
-    }, function() {
-        if (!ClockModel.getViewTime() || Math.abs(ClockModel.getViewTime() - $scope.slider.value) > 20) {
-            ClockModel.setViewTime($scope.slider.value);
-        }
-
-        if (!ClockModel.isLive()) {
-            getHistoricalData();
-        }
-    });
-
-    if (Diffusion.session()) {
-        $interval(setStart, ClockModel.replayTick);
-        setStart();
-    }
-}]);
+    }]);

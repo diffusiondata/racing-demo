@@ -14,16 +14,15 @@
  limitations under the License.
  */
 
-'use strict';
 
-var app = require('angular').module('racing');
+const app = require('angular').module('racing');
 
-app.factory('CarsModel', ['Diffusion', 'TrackModel', function(Diffusion, TrackModel) {
-    var CarsModel = {
-        teams : [],
-        cars : [],
-        toDraw : [],
-        colours : [
+app.factory('CarsModel', ['Diffusion', 'TrackModel', (Diffusion, TrackModel) => {
+    const CarsModel = {
+        teams: [],
+        cars: [],
+        toDraw: [],
+        colours: [
             'cc0066', // Reappt pink
             '00aaef', // Diffusion blue
             '00b956', // Green
@@ -33,84 +32,71 @@ app.factory('CarsModel', ['Diffusion', 'TrackModel', function(Diffusion, TrackMo
             'fdf0d5', // Papaya Whip
             'eb5e55', // Sunset Orange
             '710627', // Burgundy
-            '2f1847'  // Russian Violet
+            '2f1847', // Russian Violet
         ],
     };
 
-    CarsModel.addCar = function(car, name, team) {
-        this.teams[team].cars[car] = { name : name, colour : this.colours[team] };
+    CarsModel.addCar = (car, name, team) => {
+        CarsModel.teams[team].cars[car] = { name, colour: CarsModel.colours[team] };
 
-        this.cars = this.cars.filter(function(c) {
-            return !(c.id === car && c.teamid === team);
-        });
+        CarsModel.cars = CarsModel.cars.filter((c) => !(c.id === car && c.teamid === team));
 
-        this.cars.push({
-            name : name,
-            colour : '#' + this.colours[team],
-            class : 'col-' + this.colours[team],
-            team : this.teams[team].name,
-            teamid : team,
-            id : car,
-            loc : { x : 0, y : 0 },
-            pos : this.cars.length,
-            speed : 120,
-            selected : false
+        CarsModel.cars.push({
+            name,
+            colour: `#${CarsModel.colours[team]}`,
+            class: `col-${CarsModel.colours[team]}`,
+            team: CarsModel.teams[team].name,
+            teamid: team,
+            id: car,
+            loc: { x: 0, y: 0 },
+            pos: CarsModel.cars.length,
+            speed: 120,
+            selected: false,
         });
     };
 
-    CarsModel.addTeam = function(team, name) {
-        this.teams[team] = {
-            name : name,
-            cars : []
+    CarsModel.addTeam = (team, name) => {
+        CarsModel.teams[team] = {
+            name,
+            cars: [],
         };
     };
 
-    CarsModel.getCar = function(carid, teamid) {
-        return CarsModel.cars.find(function(car) {
-            return car.id === carid && car.teamid === teamid;
-        });
-    };
+    CarsModel.getCar = (carid, teamid) => CarsModel.cars.find((car) => car.id === carid && car.teamid === teamid);
 
-    CarsModel.getCars = function() {
-        return CarsModel.cars;
-    };
+    CarsModel.getCars = () => CarsModel.cars;
 
-    CarsModel.updateCarPosition = function(car) {
-        var id = car.id;
-        var team = car.team;
-        var location = car.loc;
-        var position = car.pos;
-        var laps = car.lap;
-        var speed = car.speed;
-        var lap = car.t;
-        var last_lap = car.pt;
-        var lap_delta = car.td;
+    CarsModel.updateCarPosition = (car) => {
+        const { id } = car;
+        const { team } = car;
+        const location = car.loc;
+        const position = car.pos;
+        const laps = car.lap;
+        const { speed } = car;
+        const lap = car.t;
+        const lastLap = car.pt;
+        const lapDelta = car.td;
 
-        var c = CarsModel.getCar(id, team);
-        var loc = TrackModel.getPositionAtLength(location);
-        c.loc = loc;
+        const c = CarsModel.getCar(id, team);
+        c.loc = TrackModel.getPositionAtLength(location);
         c.pos = position;
         c.laps = laps;
         c.speed = speed;
         c.lap = lap;
-        c.last_lap = last_lap;
-        c.lap_delta = lap_delta;
+        c.lastLap = lastLap;
+        c.lapDelta = lapDelta;
     };
 
-    CarsModel.getSelectedCar = function() {
-        return CarsModel.cars.find(function(car) {
-            return car.selected;
-        });
-    };
+    CarsModel.getSelectedCar = () => CarsModel.cars.find((car) => car.selected);
 
-    CarsModel.selectCar = function(i, j) {
+    CarsModel.selectCar = (i, j) => {
         if (CarsModel.getSelectedCar()) {
             CarsModel.getSelectedCar().selected = false;
         }
         CarsModel.getCar(i, j).selected = true;
     };
 
-    CarsModel.unselectCar = function(i, j) {
+    CarsModel.unselectCar = (i, j) => {
         CarsModel.getCar(i, j).selected = false;
     };
 
