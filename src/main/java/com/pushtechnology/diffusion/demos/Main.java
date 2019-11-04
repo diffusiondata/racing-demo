@@ -42,7 +42,7 @@ public class Main {
 
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         final OptionParser optionParser = new OptionParser();
 
         optionParser.acceptsAll(asList("u", "url"), "URL of Diffusion server")
@@ -74,7 +74,7 @@ public class Main {
         final String credentials = (String) options.valueOf("credentials");
         final String url = (String) options.valueOf("url");
         final String topic = (String) options.valueOf("root");
-        LOG.info(((String) options.valueOf("root")).toUpperCase());
+        LOG.info("The value of root= {}", options.valueOf("root"));
         // Connect to Diffusion
         final Session session = Diffusion.sessions().principal(principal)
                 .credentials(Diffusion.credentials().password(credentials))
@@ -98,7 +98,7 @@ public class Main {
 
     private static void startWebServer(OptionSet options) {
         port(3142);
-        LOG.info(Paths.get("html").toAbsolutePath().toString());
+        LOG.info("The value of 'html'= {}", Paths.get("html").toAbsolutePath().toString());
         externalStaticFileLocation("html");
         get("/race/topic", (req, res) -> options.valueOf("root"));
         init();
