@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.LockSupport;
 
 import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;
 
@@ -141,44 +142,37 @@ public class Race {
                 });
     }
 
-    void start(){
-        final long nanoFrequency = updateFrequency * 1000000;
+    void start() {
+        System.out.println("updateFrequency is " + updateFrequency);
+        final long nanoInterval = updateFrequency * 1000000;
 
-        long current = System.nanoTime();
-        long previous = current;
-        long tick = 0;
-        long elapsed;
+        long deadline = System.nanoTime();
 
         while (true) {
-            previous = current;
-            current = System.nanoTime();
-            elapsed = current - previous;
-            tick += elapsed;
 
-            update(elapsed);
+            update(nanoInterval);
             if ( isStartOfRace ) {
                 isStartOfRace = false;
             }
 
-            if ( tick >= nanoFrequency ) {
-                tick -= nanoFrequency;
+            // Update positions
+            Collections.sort(sorted);
 
-                // Update positions
-                Collections.sort(sorted);
-
-                int position = sorted.size();
-                for (Car car : sorted ) {
-                    car.setPosition( position );
-                    position -= 1;
-                }
-
-                if (sorted.get(0).getLap() > lapCount) {
-                    reset();
-                }
-
-                // Send snapshot to Diffusion
-                timeSeries.append(topic + "/updates", JSON.class, createJSON());
+            int position = sorted.size();
+            for (Car car : sorted ) {
+                car.setPosition( position );
+                position -= 1;
             }
+
+            if (sorted.get(0).getLap() > lapCount) {
+                reset();
+            }
+
+            // Send snapshot to Diffusion
+            timeSeries.append(topic + "/updates", JSON.class, createJSON());
+
+            deadline += nanoInterval;
+            LockSupport.parkNanos(deadline - System.nanoTime());
         }
     }
 
@@ -238,7 +232,6 @@ public class Race {
         final TopicUpdateControl.Updater.UpdateCallback callback = new TopicUpdateControl.Updater.UpdateCallback.Default();
         final TopicUpdateControl.ValueUpdater<Long> longUpdater = topicUpdateControl.updater().valueUpdater(Long.class);
         final TopicUpdateControl.ValueUpdater<String> stringUpdater = topicUpdateControl.updater().valueUpdater(String.class);
-
 
         // Add track filename
         // Note: we remove the html prefix to not confuse the webserver
