@@ -21,7 +21,7 @@ import com.pushtechnology.diffusion.client.callbacks.ErrorReason;
 import com.pushtechnology.diffusion.client.features.TimeSeries;
 import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl;
 import com.pushtechnology.diffusion.client.features.control.topics.TopicControl;
-import com.pushtechnology.diffusion.client.features.control.topics.TopicUpdateControl;
+import com.pushtechnology.diffusion.client.features.TopicUpdate;
 import com.pushtechnology.diffusion.client.session.Session;
 import com.pushtechnology.diffusion.client.topics.details.TopicSpecification;
 import com.pushtechnology.diffusion.client.topics.details.TopicType;
@@ -228,10 +228,10 @@ public class Race {
 
     private void createTopics(String retainedRange) throws InterruptedException, ExecutionException, TimeoutException {
         final TopicControl topicControl = session.feature(TopicControl.class);
-        final TopicUpdateControl topicUpdateControl = session.feature(TopicUpdateControl.class);
-        final TopicUpdateControl.Updater.UpdateCallback callback = new TopicUpdateControl.Updater.UpdateCallback.Default();
-        final TopicUpdateControl.ValueUpdater<Long> longUpdater = topicUpdateControl.updater().valueUpdater(Long.class);
-        final TopicUpdateControl.ValueUpdater<String> stringUpdater = topicUpdateControl.updater().valueUpdater(String.class);
+        final TopicUpdate topicUpdate = session.feature(TopicUpdate.class);
+        final TopicSpecification stringTopicSpec = Diffusion.newTopicSpecification(TopicType.STRING);
+        final TopicSpecification longTopicSpec = Diffusion.newTopicSpecification(TopicType.INT64);
+
 
         // Add track filename
         // Note: we remove the html prefix to not confuse the webserver
@@ -242,34 +242,29 @@ public class Race {
             trackFile = raceTrack.getFileName();
         }
 
-        topicControl.addTopic(topic, TopicType.STRING)
-                .thenAccept(result -> stringUpdater.update(topic, trackFile, callback))
-                .get(5, TimeUnit.SECONDS);
+        topicUpdate.addAndSet(topic, stringTopicSpec, String.class, trackFile)
+            .get(5, TimeUnit.SECONDS);
 
         // Add team count to teams topic
         final String teamsTopic = topic + "/teams";
-        topicControl.addTopic(teamsTopic, TopicType.INT64)
-                .thenAccept(result -> longUpdater.update(teamsTopic, (long)teams.size(), callback))
+        topicUpdate.addAndSet(teamsTopic, longTopicSpec, Long.class, (long)teams.size())
                 .get(5, TimeUnit.SECONDS);
 
         for (Team team : teams) {
             // Add team name topic
             final String teamTopic = topic + "/teams/" + team.getID();
-            topicControl.addTopic(teamTopic, TopicType.STRING)
-                    .thenAccept(result -> stringUpdater.update(teamTopic, team.getName(), callback))
+            topicUpdate.addAndSet(teamTopic, stringTopicSpec, String.class, team.getName())
                     .get(5, TimeUnit.SECONDS);
 
             // Add car count to cars topic
             final String carsTopic = topic + "/teams/" + team.getID() + "/cars";
-            topicControl.addTopic(carsTopic, TopicType.INT64)
-                    .thenAccept(result -> longUpdater.update(carsTopic, (long) team.getCarCount(), callback))
+            topicUpdate.addAndSet(carsTopic, longTopicSpec, Long.class, (long)team.getCarCount())
                     .get(5, TimeUnit.SECONDS);
 
             for (Car car : team.getCars()) {
                 // Add car name topic
                 final String carTopic = topic + "/teams/" + team.getID() + "/cars/" + car.getId();
-                topicControl.addTopic(carTopic, TopicType.STRING)
-                        .thenAccept(result -> stringUpdater.update(carTopic, car.getDriverName(), callback))
+                topicUpdate.addAndSet(carTopic, stringTopicSpec, String.class, car.getDriverName())
                         .get(5, TimeUnit.SECONDS);
             }
         }
