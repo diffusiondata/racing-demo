@@ -98,8 +98,8 @@ public class Main {
 
     private static void startWebServer(OptionSet options) {
         port(3142);
-        LOG.info("The value of 'html'= {}", Paths.get("src/main/resources/html").toAbsolutePath().toString());
-        externalStaticFileLocation("src/main/resources/html");
+        LOG.info("The value of 'html'= {}", Paths.get("html").toAbsolutePath().toString());
+        externalStaticFileLocation("html");
         get("/race/topic", (req, res) -> options.valueOf("root"));
         init();
     }
