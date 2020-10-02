@@ -56,7 +56,7 @@
         <dependency>
             <groupId>com.pushtechnology.diffusion</groupId>
             <artifactId>diffusion-client</artifactId>
-            <version>6.5.0</version>
+            <version>[6.5.0,)</version>
         </dependency>
 
         <dependency>
