@@ -18,8 +18,8 @@ package com.pushtechnology.diffusion.demos;
 
 import com.pushtechnology.diffusion.client.Diffusion;
 import com.pushtechnology.diffusion.client.callbacks.ErrorReason;
+import com.pushtechnology.diffusion.client.features.Messaging;
 import com.pushtechnology.diffusion.client.features.TimeSeries;
-import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl;
 import com.pushtechnology.diffusion.client.features.control.topics.TopicControl;
 import com.pushtechnology.diffusion.client.features.TopicUpdate;
 import com.pushtechnology.diffusion.client.session.Session;
@@ -86,7 +86,7 @@ public class Race {
         }
 
         timeSeries = session.feature(TimeSeries.class);
-        MessagingControl messaging = session.feature(MessagingControl.class);
+        Messaging messaging = session.feature(Messaging.class);
 
         createTopics(retainedRange);
 
@@ -95,7 +95,7 @@ public class Race {
                 topic,
                 JSON.class,
                 JSON.class,
-                new MessagingControl.RequestHandler<JSON, JSON>() {
+                new Messaging.RequestHandler<JSON, JSON>() {
                     @Override
                     public void onRequest(JSON json, RequestContext requestContext, Responder<JSON> responder) {
                         // Read request
