@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017,2020 Push Technology Ltd.
+ * Copyright (C) 2017, 2021 Push Technology Ltd.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -32,7 +32,11 @@ import com.pushtechnology.repackaged.jackson.dataformat.cbor.CBORFactory;
 import com.pushtechnology.repackaged.jackson.dataformat.cbor.CBORParser;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,9 +47,9 @@ import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME
 public class Race {
     private static final JSONDataType JSON_DATA_TYPE = Diffusion.dataTypes().json();
 
-    private final ArrayList<Team> teams;
-    private final ArrayList<Car> cars;
-    private final ArrayList<Car> sorted;
+    private final List<Team> teams;
+    private final List<Car> cars;
+    private final List<Car> sorted;
     private final RaceTrack raceTrack;
     private final long updateFrequency;
     private final Session session;
@@ -64,7 +68,7 @@ public class Race {
             String topic,
             String retainedRange,
             int lapCount,
-            ArrayList<Team> teams) throws InterruptedException, ExecutionException, TimeoutException {
+            List<Team> teams) throws InterruptedException, ExecutionException, TimeoutException {
 
         this.reactionRange = reactionRange;
         this.updateFrequency = updateFrequency;
@@ -96,7 +100,7 @@ public class Race {
                     public void onRequest(JSON json, RequestContext requestContext, Responder<JSON> responder) {
                         // Read request
                         CBORFactory factory = new CBORFactory();
-                        CBORParser parser = null;
+                        CBORParser parser;
                         Map<String, String> request  = new HashMap<>();
 
                         try {
