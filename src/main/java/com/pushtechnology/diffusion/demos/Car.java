@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Push Technology Ltd.
+ * Copyright (C) 2017, 2021 Push Technology Ltd.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.pushtechnology.diffusion.demos;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Car implements Comparable<Car> {
     private final int id;

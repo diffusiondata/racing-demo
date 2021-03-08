@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Push Technology Ltd.
+ * Copyright (C) 2017, 2021 Push Technology Ltd.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public class RaceTrack {
         // Find segment this car is in
         for (Part part : parts) {
             if (location >= part.location
-                    && location <= part.location + part.length) {
+                    && location <= part.location + part.getLength()) {
                 return part;
             }
         }
