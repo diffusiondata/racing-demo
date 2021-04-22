@@ -35,10 +35,12 @@ app.controller('ConnectingController',
     ['$scope', '$state', '$timeout', '$http', 'Diffusion', 'TrackModel', 'CarsModel', 'TopicModel',
         function controller($scope, $state, $timeout, $http, Diffusion, TrackModel, CarsModel, TopicModel) {
             TopicModel.setTopic();
-
-
             $http.get('json/properties.json').then((response) => {
                 Diffusion.connect(response.data, () => {
+                    if (Diffusion.session()) {
+                        $scope.connectionErrorMsg = true;
+                    }
+
                     const rootTopic = TopicModel.getTopic().Topic;
                     const teamPosition = rootTopic.split('/').length + 1;
 
@@ -76,7 +78,6 @@ app.controller('ConnectingController',
                                 .on('value', getCars);
                         }
                     };
-
 
                     Diffusion.session().addStream(rootTopic, Diffusion.datatypes.string())
                         .on('value', (topic, spec, value) => {

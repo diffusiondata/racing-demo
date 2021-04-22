@@ -26,6 +26,9 @@ import java.nio.file.Paths;
 
 import com.pushtechnology.diffusion.client.Diffusion;
 import com.pushtechnology.diffusion.client.session.Session;
+import com.pushtechnology.diffusion.client.session.Session.Listener;
+import com.pushtechnology.diffusion.client.session.Session.State;
+import com.pushtechnology.diffusion.client.internal.session.SessionEstablishmentTransientException;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -74,26 +77,41 @@ public class Main {
         final String credentials = (String) options.valueOf("credentials");
         final String url = (String) options.valueOf("url");
         final String topic = (String) options.valueOf("root");
+        final int reconnection_time = 30000;
         LOG.info("The value of root= {}", options.valueOf("root"));
-        // Connect to Diffusion
-        final Session session = Diffusion.sessions().principal(principal)
+
+        try {
+                // Connect to Diffusion
+                final Session session = Diffusion.sessions().principal(principal)
                 .credentials(Diffusion.credentials().password(credentials))
+                .reconnectionTimeout(reconnection_time)
                 .open(url);
-        // Load the race
-        final Race race = RaceBuilder
+
+                session.addListener(new Listener() {
+                        @Override
+                        public void onSessionStateChanged(Session session, State oldState, State newState) {
+                            if (newState == State.CLOSED_FAILED) {
+                                LOG.error("Unable to reconnect to Diffusion at " + url);
+                                System.exit(1);
+                            }
+                        }
+                    });
+
+                // Load the race
+                final Race race = RaceBuilder
                 .create()
                 .fromProperties(topic)
                 .setDiffusionSession(session)
                 .setDiffusionSession(session).build();
 
-        if (race == null) {
-            LOG.error("Failed to create race!");
-            System.exit(42);
-            return;
-        }
+                // Start the race
+                race.start();
 
-        // Start the race
-        race.start();
+        } catch (SessionEstablishmentTransientException e) {
+                LOG.error("Failed to create race!");
+                LOG.error(e.toString());
+                System.exit(42);
+        }
     }
 
     private static void startWebServer(OptionSet options) {
